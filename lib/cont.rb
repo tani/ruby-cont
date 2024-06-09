@@ -22,5 +22,10 @@
 require_relative 'cont/single_prompt'
 
 module Cont
-  include SinglePrompt
+  def self.reset(&block)
+    SinglePrompt.reset(&block)
+  end
+  def self.shift(&block)
+    SinglePrompt.shift(&block)
+  end
 end

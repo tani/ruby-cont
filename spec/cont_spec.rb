@@ -1,10 +1,10 @@
 require 'rspec'
-require_relative '../lib/cont/single_prompt'
+require_relative '../lib/cont'
 
-RSpec.describe SinglePrompt do
+RSpec.describe Cont do
   describe '.reset' do
     it 'executes the block and returns the result' do
-      result = SinglePrompt.reset do
+      result = Cont.reset do
         42
       end
       expect(result).to eq(42)
@@ -13,8 +13,8 @@ RSpec.describe SinglePrompt do
 
   describe '.shift' do
     it 'captures and resumes the continuation correctly' do
-      result = SinglePrompt.reset do
-        SinglePrompt.shift do |cont|
+      result = Cont.reset do
+        Cont.shift do |cont|
           cont.call(42) + 1
         end
       end

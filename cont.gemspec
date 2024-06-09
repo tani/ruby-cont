@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'cont'
-  spec.version       = '0.1.0'
+  spec.version       = '0.1.1'
   spec.authors       = ['Masaya Taniguchi']
   spec.email         = ['ta2ghc@gmail.com']
 
