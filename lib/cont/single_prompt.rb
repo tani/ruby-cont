@@ -13,7 +13,7 @@ module SinglePrompt
   #
   # @yield [block] The block of code to be run
   # @return [Object] The result of the block.
-  def self.reset(&block)
+  def reset(&block)
     prompt0(&block)
   end
 
@@ -21,7 +21,7 @@ module SinglePrompt
   #
   # @yield [block] The block of code to be run
   # @return [Object] The result of the block.
-  def self.shift(&block)
+  def shift(&block)
     control0 do |fiber|
       prompt0 do
         block.call lambda { |value|
@@ -34,9 +34,7 @@ module SinglePrompt
     end
   end
 
-  private
-
-  def self.run(fiber, *args)
+  def run(fiber, *args)
     status, value = fiber.resume(*args)
     case status
     when :return
@@ -48,17 +46,19 @@ module SinglePrompt
     end
   end
 
-  def self.prompt0(&block)
+  def prompt0(&block)
     fiber = Fiber.new do
       Fiber.yield(:return, block.call())
     end
     run(fiber)
   end
 
-  def self.control0(&block)
+  def control0(&block)
     status, f = Fiber.yield(:capture, block)
     raise UnexpectedStatusError.new("unexpected status: #{status}") \
       unless status == :resume
     f.call()
   end
+
+  module_function :reset, :shift, :run, :prompt0, :control0
 end

@@ -22,10 +22,6 @@
 require_relative 'cont/single_prompt'
 
 module Cont
-  def self.reset(&block)
-    SinglePrompt.reset(&block)
-  end
-  def self.shift(&block)
-    SinglePrompt.shift(&block)
-  end
+  include SinglePrompt
+  module_function :reset, :shift, :run, :prompt0, :control0
 end

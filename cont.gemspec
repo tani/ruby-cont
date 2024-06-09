@@ -1,6 +1,7 @@
+require_relative 'lib/cont/version'
 Gem::Specification.new do |spec|
   spec.name          = 'cont'
-  spec.version       = '0.1.1'
+  spec.version       = Cont::VERSION
   spec.authors       = ['Masaya Taniguchi']
   spec.email         = ['ta2ghc@gmail.com']
 
