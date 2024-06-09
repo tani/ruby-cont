@@ -47,7 +47,7 @@ result = Cont.reset do
     cont.call(42) + 1
   end
 end
-puts result # => 42
+puts result # => 43
 ```
 
 ## Exceptions
