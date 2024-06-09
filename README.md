@@ -1,4 +1,7 @@
-# Cont Library
+# Cont
+
+[![Gem Version](https://badge.fury.io/rb/cont.svg)](https://badge.fury.io/rb/cont)
+
 
 ## Overview
 
