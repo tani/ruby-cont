@@ -20,8 +20,11 @@
 # This software is released under the MIT License.
 
 require_relative 'cont/single_prompt'
+require_relative 'cont/multi_prompt'
 
 module Cont
   include SinglePrompt
+  include MultiPrompt
   module_function :reset, :shift, :run, :prompt0, :control0
+  module_function :reset_at, :shift_at, :run_at, :prompt0_at, :control0_at
 end

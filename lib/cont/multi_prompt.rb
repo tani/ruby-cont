@@ -1,4 +1,4 @@
-module SinglePrompt
+module MultiPrompt
 
   # The 'fiber' library is required for the implementation of continuations.
   require 'fiber'
@@ -13,51 +13,53 @@ module SinglePrompt
   #
   # @yield [block] The block of code to be run
   # @return [Object] The result of the block.
-  def reset(&block)
-    prompt0(&block)
+  def reset_at(tag, &block)
+    prompt0_at(tag, &block)
   end
 
   # Capture the current continuation.
   #
   # @yield [block] The block of code to be run
   # @return [Object] The result of the block.
-  def shift(&block)
-    control0 do |fiber|
-      prompt0 do
+  def shift_at(tag, &block)
+    control0_at(tag) do |fiber|
+      prompt0_at(tag) do
         block.call lambda { |value|
-          prompt0 do
+          prompt0_at(tag) do
             raise DeadContinuationError.new unless fiber.alive?
-            run(fiber, :resume, lambda { value })
+            run_at(nil, fiber, :resume, lambda { value })
           end
         }
       end
     end
   end
 
-  def run(fiber, *args)
+  def run_at(tag, fiber, *args)
     case fiber.resume(*args)
     in :return, value
       value
-    in :capture, value
+    in :capture, ^tag, value
       value.call(fiber)
+    in :capture, other_tag, value
+        run_at(tag, fiber, Fiber.yield(:capture, other_tag, value))
     else
       raise UnexpectedStatusError.new("unexpected status: #{status}")
     end
   end
 
-  def prompt0(&block)
+  def prompt0_at(tag, &block)
     fiber = Fiber.new do
       Fiber.yield(:return, block.call())
     end
-    run(fiber)
+    run_at(tag, fiber)
   end
 
-  def control0(&block)
-    status, f = Fiber.yield(:capture, block)
+  def control0_at(tag, &block)
+    status, f = Fiber.yield(:capture, tag, block)
     raise UnexpectedStatusError.new("unexpected status: #{status}") \
       unless status == :resume
     f.call()
   end
 
-  module_function :reset, :shift, :run, :prompt0, :control0
+  module_function :reset_at, :shift_at, :run_at, :prompt0_at, :control0_at
 end

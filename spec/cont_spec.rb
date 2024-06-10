@@ -21,5 +21,25 @@ RSpec.describe Cont do
       expect(result).to eq(43)
     end
   end
+
+  describe '.reset_at' do
+    it 'executes the block and returns the result' do
+      result = Cont.reset_at(:tag) do
+        42
+      end
+      expect(result).to eq(42)
+    end
+  end
+
+  describe '.shift_at' do
+    it 'captures and resumes the continuation correctly' do
+      result = Cont.reset_at(:tag) do
+        Cont.shift_at(:tag) do |cont|
+          cont.call(42) + 1
+        end
+      end
+      expect(result).to eq(43)
+    end
+  end
 end
 
