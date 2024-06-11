@@ -41,7 +41,7 @@ module SinglePrompt
     in :capture, value
       value.call(fiber)
     else
-      raise UnexpectedStatusError.new("unexpected status: #{status}")
+      raise UnexpectedStatusError.new("unexpected status")
     end
   end
 

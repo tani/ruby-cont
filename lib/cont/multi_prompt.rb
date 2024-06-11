@@ -43,7 +43,7 @@ module MultiPrompt
     in :capture, other_tag, value
         run_at(tag, fiber, Fiber.yield(:capture, other_tag, value))
     else
-      raise UnexpectedStatusError.new("unexpected status: #{status}")
+      raise UnexpectedStatusError.new("unexpected status")
     end
   end
 
