@@ -1,2 +1,2 @@
 source "https://rubygems.org"
-gem 'rspec', '~> 3.10'
+gem 'minitest', '~> 5.23', '>= 5.23.1'
