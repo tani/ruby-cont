@@ -2,7 +2,7 @@ require 'rspec'
 require_relative '../lib/cont'
 
 RSpec.describe Cont do
-  describe '.reset' do
+  describe 'SinglePrompt' do
     it 'computes the correct result after reset and shift operations' do
       result = Cont.reset do
         3 * Cont.shift do |k|
@@ -116,5 +116,58 @@ RSpec.describe Cont do
       expect(k.call(lambda { raise 'error' })).to be_a(Proc)
     end
   end
-end
 
+  describe 'MultiPrompt' do
+    it 'computes the correct result with multiple resets and shifts' do
+      k = Cont.reset_at(:x) do
+        1 + Cont.reset_at(:y) do
+          3 * Cont.shift_at(:x) { |k| k }
+        end
+      end
+      expect(k.call(5)).to eq(16)
+    end
+  end
+
+  it 'computes the correct result with nested reset_at and shift_at' do
+    k = Cont.reset_at(:x) do
+      1 + (Cont.reset_at(:y) do
+        a = Cont.shift_at(:x) { |k| k }
+        expect(a).to eq(5)
+        b = Cont.shift_at(:y) { |k| k }
+        expect(b).to eq(3)
+        a * b
+      end).call(3)
+    end
+    expect(k.call(5)).to eq(16)
+  end
+
+  it 'computes the correct result with control0_at' do
+    result = Cont.reset_at(:x) do
+      1 + Cont.reset_at(:y) do
+        2 + Cont.control0_at(:x) do |k|
+          Cont.run_at(nil, k, :resume, lambda {
+            Cont.control0_at(:y) do |l|
+              3 * Cont.run_at(nil, l, :resume, lambda { 5 })
+            end
+          })
+        end
+      end
+    end
+    expect(result).to eq(22)
+  end
+
+  it 'computes the correct result with control0_at' do
+    result = Cont.reset_at(:y) do
+      7 * Cont.reset_at(:x) do
+        2 + Cont.control0_at(:x) do |k|
+          Cont.run_at(nil, k, :resume, lambda {
+            Cont.control0_at(:y) do |l|
+              3 + Cont.run_at(nil, l, :resume, lambda { 5 })
+            end
+          })
+        end
+      end
+    end
+    expect(result).to eq(52)
+  end
+end
