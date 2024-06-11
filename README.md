@@ -2,7 +2,6 @@
 
 [![Gem Version](https://badge.fury.io/rb/cont.svg)](https://badge.fury.io/rb/cont)
 
-
 ## Overview
 
 The `Cont` module is a Ruby library that provides an implementation of
@@ -31,7 +30,6 @@ It takes a block of code and returns the result of that block.
 
 ```ruby
 result = Cont.reset do
-  # Your code here
   42
 end
 puts result # => 42
@@ -46,8 +44,38 @@ It takes a block of code, which should call a lambda to resume the continuation.
 
 ```ruby
 result = Cont.reset do
-  Cont.shift do |cont|
-    cont.call(42) + 1
+  Cont.shift do |k|
+    k.call(42) + 1
+  end
+end
+puts result # => 43
+```
+
+### `Cont.reset_at`
+
+`Cont.reset_at` limits the continuation to the current block and assigns it a tag.
+It takes a tag and a block of code, allowing you to manage multiple continuation points.
+
+#### Example
+
+```ruby
+result = Cont.reset_at(:x) do
+  1 + Cont.shift_at(:x) { |cont| cont.call(2) }
+end
+puts result # => 3
+```
+
+### `Cont.shift_at`
+
+`Cont.shift_at` captures the current continuation associated with a specific tag and allows you to resume it.
+It takes a tag and a block of code, enabling more complex control flow by using multiple continuations.
+
+#### Example
+
+```ruby
+result = Cont.reset_at(:x) do
+  Cont.shift_at(:x) do |k|
+    k.call(42) + 1
   end
 end
 puts result # => 43
